@@ -4,37 +4,35 @@ import heapq as hq
 
 # Population to apply GAs
 class Population:
-    pop_size = 0
-    mut_rate = 0
-    tracks = []
 
-    def __init__(self, pop_size, mut_rate):
+    def __init__(self, pop_size=1000, mut_rate=0.1):
         self.pop_size = pop_size
         self.mut_rate = mut_rate
         self.tracks = []
 
-        # seeds the initial population with fitnesses over 0
+        # Seeds the initial population with random tracks
         for i in range(pop_size):
             track = Track()
             track.random()
 
-            while track.fitness <= 0:
-                track.random()
-
             hq.heappush(self.tracks, track)
 
+    # Performs crossover two random tracks
     def reproduction(self):
-        # kill the two weakest
-        dead = hq.heappop(self.tracks)
-        dead = hq.heappop(self.tracks)
+        # Remove the two weakest tracks
+        hq.heappop(self.tracks)
+        hq.heappop(self.tracks)
 
-        # grab two random
+        # Grab two random tracks
         parent_one = self.tracks[rand.randrange(len(self.tracks))]
         parent_two = self.tracks[rand.randrange(len(self.tracks))]
 
         # and they make babiez :)
         self.crossover(parent_one, parent_two)
 
+    # Takes in two tracks and produces two children
+    # by splitting the two parents at a randomly determined
+    # partition.
     def crossover(self, parent_one, parent_two):
         parent_one_len = len(parent_one.notes)
         parent_two_len = len(parent_two.notes)
@@ -44,10 +42,9 @@ class Population:
         child_one = Track()
         child_two = Track()
 
-        index = rand.randrange(len_min)
-        # cross-over
-        for i in range(len_max):
+        partition_index = rand.randrange(len_min)
 
+        for i in range(len_max):
             # if we go past one parent, lets continue adding to the other child
             if i >= parent_one_len:
                 while i < parent_two_len:
@@ -59,33 +56,35 @@ class Population:
                     child_two.notes.append(parent_one.notes[i])
                     i += 1
 
-            elif i > index:
+            elif i < partition_index:
                 child_one.notes.append(parent_one.notes[i])
                 child_two.notes.append(parent_two.notes[i])
             else:
                 child_one.notes.append(parent_two.notes[i])
                 child_two.notes.append(parent_one.notes[i])
 
-                # sort the notes since the cross-over mixed their start times
+        # Sort the notes by their start times,
+        # since the cross-over mixed their start times
         child_one.notes.sort()
         child_two.notes.sort()
 
-        # remove any notes that have same start-times
+        # Remove any notes that have identical start-times
         child_one.remove_dup()
         child_two.remove_dup()
 
-        # normalize
+        # Normalize
         child_one.normalize()
         child_two.normalize()
 
+        #
         if rand.random() <= self.mut_rate:
             child_one = self.mutate(child_one)
         if rand.random() <= self.mut_rate:
             child_two = self.mutate(child_two)
 
         # calc the fit
-        child_one.calcFitness()
-        child_two.calcFitness()
+        child_one.calc_fitness()
+        child_two.calc_fitness()
 
         # push them to the priority queue heap
         hq.heappush(self.tracks, child_one)

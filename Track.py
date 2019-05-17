@@ -10,26 +10,10 @@ class Track:
 
     # A track is a list of notes, a number describing the number of notes, and a
     # bpm which gives time context to ticks
-    # 
-    # Each note is
-    #         name                desc                         range
-    #      start tick     the tick the note begins at         0 - inf
-    #      duration       how many ticks the note lasts       0 - inf
-    #      pitch          what the note's sound is            0 - 127
-    #      velocity       how hard the note is played         0 - 127
+
     # 
     # more info on pitch (might be relevant for heuristics):
-    #             There are 12 notes in total
-    #        C  C#  D  D#  E  F  F#  G  G#  A  A#  B
-    # pitch  0  1   2  3   4  5  6   7  8   9  10  11
-    # 
-    #        These repeat until the max value of 127 (which happens to be a G)
-    #        Each repetition is called an Octave, with 0-11 being octave 1,
-    #        12-23 octave 2, etc...
-    # 
-    #        You can get the note name by calling
-    #             midi.NOTE_NAMES[note.pitch % midi.OCTAVE_MAX_VALUE]
-    #        where note.pitch is the note you want the name of
+
 
     # List of notes in the track
     notes = []
@@ -89,10 +73,10 @@ class Track:
         output.append(pattern[3])
         return output
 
-    # creates random notes and stores them in its note list
-    def random(self):
+    # Creates random notes and stores them in the tracks note list
+    def random(self, num_of_notes):
         self.notes = []
-        self.num = 65
+        self.num = num_of_notes
         temp_note = Note()
         temp_note.random(0)
         self.notes.append(temp_note)
@@ -171,10 +155,10 @@ class Track:
     # This rule rewards starting and ending notes
     def rule_one(self):
         fit = 0
-
+        starting_note = midi.NOTE_NAMES[(self.notes[0].pitch % midi.NOTE_PER_OCTAVE)]
         # Start note
-        if (midi.NOTE_NAMES[(self.notes[0].pitch % midi.NOTE_PER_OCTAVE)]
-                == (PARAMS.NOTES_IN_KEY[0] or PARAMS.NOTES_IN_KEY[4])):
+        if (starting_note is PARAMS.NOTES_IN_KEY[0]) or \
+           (starting_note is PARAMS.NOTES_IN_KEY[4]):
             fit += 200
 
         # End note

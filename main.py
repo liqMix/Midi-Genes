@@ -1,19 +1,17 @@
-from Parameters import *
 from Population import *
-from Track import *
 
 PARAMS = Parameters(bpm=120, key='C')
-##Creates population
+
+# Creates population
 pop = Population(10000, 0.2)
 
-##Reproduce
+# Reproduce
 for i in range(10000000):
-  pop.reproduction()
+    pop.reproduction()
 
-##check the track fitness
-hq.nlargest(len(pop.tracks), pop.tracks)[0].fitness
+# Check the track fitness
+print(hq.nlargest(len(pop.tracks), pop.tracks)[0].fitness)
 
-##Download
+# Download the track with highest fitness
 pattern = midi.read_midifile("backing.mid")
 midi.write_midifile("example.mid", hq.nlargest(len(pop.tracks), pop.tracks)[0].outputPattern(pattern))
-files.download('example.mid')
