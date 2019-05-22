@@ -2,54 +2,44 @@ from Note import *
 import midi
 
 
+# A track is a container for a list of notes,
+# and is effectively a "genome" for our use,
+# with the notes list serving as the "alleles"
 class Track:
-    # Holds the notes and BPM for a given track
-
-    # Serves effectively as a "genome" for our use, with the
-    # notes list serving as the "alleles"
-
-    # A track is a list of notes, a number describing the number of notes, and a
-    # bpm which gives time context to ticks
-
-    # 
-    # more info on pitch (might be relevant for heuristics):
-
-
-    # List of notes in the track
-    notes = []
-    fitness = 0
-
-    def __init__(self):
-        self.notes = []
+    def __init__(self, notes=[]):
+        self.notes = notes
         self.num = 0
         self.fitness = 0
 
-    # overloads the print operation
+    # Prints each note in the list
     def __repr__(self):
         for note in self.notes:
             print(self.notes.index(note), " ", note)
         return " "
 
-    # overloads the less than operator
+    # Used to sort tracks by fitness
     def __lt__(self, other):
         return self.fitness < other.fitness
 
     # Outputs the track as a midi.Pattern to be encoded back into a midi file
     # by the midi module
     # 
-    # NEEDS the input pattern in order to reattach certain parts
+    # NEEDS an input pattern in order to reattach certain parts
     def output_pattern(self, pattern):
         output = midi.Pattern(resolution=pattern.resolution)
+
+        # pattern[0] is midi meta info for the pattern
         output.append(pattern[0])
+
         track = midi.Track()
+
+        # pattern[1][0] contains the meta information for that track
         track.append(pattern[1][0])
+        # changes instrument to piano
+        # TODO: allow user to change the instrument
         track.append(midi.ProgramChangeEvent(tick=0, channel=2, data=[0]))
 
-        # for event in pattern[1]:
-        # if isinstance(event, midi.NoteOnEvent):
-        #    break
-        #  track.append(event)
-
+        # Translates the notes in the track to midi events
         for note in self.notes:
             track.append(midi.NoteOnEvent(tick=note.start, channel=2,
                                           pitch=note.pitch,
@@ -60,14 +50,19 @@ class Track:
                                            pitch=note.pitch,
                                            velocity=100))
 
+        # Attach track end event
         track.append(midi.EndOfTrackEvent(tick=PARAMS.END_TICK))
+
+        # Sets each event's ticks to be relative to the next event
+        # Sets each start tick to 0 to ensure no overlapping events
         track.tick_relative = False
         track.make_ticks_rel()
-
         for e in track:
             if isinstance(e, midi.NoteOnEvent):
                 e.tick = 0
 
+        # Appends our track to output
+        # pattern[2] and [3] are accompaniment tracks
         output.append(track)
         output.append(pattern[2])
         output.append(pattern[3])
@@ -98,7 +93,7 @@ class Track:
 
             self.notes.append(temp_note)
 
-    # removes notes with same start tick
+    # Removes notes with same start tick
     def remove_dup(self):
         i = 1
 
@@ -108,7 +103,7 @@ class Track:
                 i -= 1
             i += 1
 
-    # restructures the note start times after readjusting the last note
+    # Restructures the note start times after readjusting the last note
     def normalize(self):
         i = len(self.notes) - 1
 
@@ -127,88 +122,3 @@ class Track:
             del self.notes[i]
             i -= 1
 
-    # # # # # # # # # # # # #  FITNESS SECTION # # # # # # # # # # # # # # # # # # #
-    # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
-    # calculates fitness based on parameters
-    def calc_fitness(self):
-        self.fitness = self.apply_rules()
-
-    def apply_rules(self):
-        fit = 0
-        fit = self.key_fitness()
-        fit += self.rule_one()
-        fit += self.rule_two()
-        fit += self.rule_three()
-        fit += self.rule_four()
-        return fit
-
-    # calculates fitness of track based on notes falling within key
-    def key_fitness(self):
-        fit = 0
-        for n in self.notes:
-            if midi.NOTE_NAMES[(n.pitch % midi.NOTE_PER_OCTAVE)] in PARAMS.NOTES_IN_KEY:
-                fit += 200
-            else:
-                fit -= 100
-        return fit
-
-    # This rule rewards starting and ending notes
-    def rule_one(self):
-        fit = 0
-        starting_note = midi.NOTE_NAMES[(self.notes[0].pitch % midi.NOTE_PER_OCTAVE)]
-        # Start note
-        if (starting_note is PARAMS.NOTES_IN_KEY[0]) or \
-           (starting_note is PARAMS.NOTES_IN_KEY[4]):
-            fit += 200
-
-        # End note
-        if (midi.NOTE_NAMES[(self.notes[-1].pitch % midi.NOTE_PER_OCTAVE)]
-                != PARAMS.NOTES_IN_KEY[0]):
-            fit -= 100
-        else:
-            fit += 200
-
-        return fit
-
-    # This rule penalizes large jumps in pitch
-    def rule_two(self):
-        fit = 0
-        for i in range(len(self.notes)):
-            if i != 0:
-                dist = abs(self.notes[i].pitch - self.notes[i - 1].pitch)
-                if dist != 2:
-                    fit -= dist * 5
-        return fit
-
-    # This rule rewards jumps in pitch if followed by reverse movement
-    def rule_three(self):
-        fit = 0
-        for i in range(len(self.notes)):
-            if i != 0 and i != (len(self.notes) - 1):
-                if ((self.notes[i].pitch - self.notes[i - 1].pitch)
-                        >= 3):
-                    if self.notes[i + 1].pitch - self.notes[i].pitch < 0:
-                        fit += 50
-                    else:
-                        fit -= 100
-
-                elif (self.notes[i].pitch - self.notes[i - 1].pitch) <= -3:
-                    if self.notes[i + 1].pitch - self.notes[i].pitch > 0:
-                        fit += 50
-                    else:
-                        fit -= 100
-
-        return fit
-
-    # This rule penalizes a tritone jump
-    def rule_four(self):
-        fit = 0
-        for i in range(len(self.notes)):
-            if i != (len(self.notes) - 1):
-                firstNote = midi.NOTE_NAMES[(self.notes[i].pitch % midi.NOTE_PER_OCTAVE)]
-                secondNote = midi.NOTE_NAMES[(self.notes[i + 1].pitch % midi.NOTE_PER_OCTAVE)]
-                if (((firstNote == PARAMS.NOTES_IN_KEY[3]) and (secondNote == PARAMS.NOTES_IN_KEY[6]))
-                        or ((firstNote == PARAMS.NOTES_IN_KEY[6]) and (secondNote == PARAMS.NOTES_IN_KEY[3]))):
-                    fit -= 250
-
-        return fit

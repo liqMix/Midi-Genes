@@ -1,6 +1,6 @@
-# Holds the individual note information
 import random as rand
 from Parameters import *
+
 
 # Each note is
 #         name                desc                         range
