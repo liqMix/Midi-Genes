@@ -1,6 +1,8 @@
 from Track import *
+from Fitness import Fitness
 import heapq as hq
 
+fit = Fitness(PARAMS)
 
 # Population to apply GAs
 class Population:
@@ -13,8 +15,8 @@ class Population:
         # Seeds the initial population with random tracks
         for i in range(pop_size):
             track = Track()
-            track.random()
-
+            track.random(32)
+            track.normalize()
             hq.heappush(self.tracks, track)
 
     # Performs crossover two random tracks
@@ -83,8 +85,8 @@ class Population:
             child_two = self.mutate(child_two)
 
         # calc the fit
-        child_one.calc_fitness()
-        child_two.calc_fitness()
+        child_one.fitness = fit.calc_fitness(child_one)
+        child_two.fitness = fit.calc_fitness(child_two)
 
         # push them to the priority queue heap
         hq.heappush(self.tracks, child_one)

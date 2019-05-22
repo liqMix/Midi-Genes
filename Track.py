@@ -1,7 +1,8 @@
+from Fitness import Fitness
 from Note import *
 import midi
 
-
+fit = Fitness(PARAMS)
 # A track is a container for a list of notes,
 # and is effectively a "genome" for our use,
 # with the notes list serving as the "alleles"
@@ -89,7 +90,8 @@ class Track:
                         del n
 
                 self.notes.append(temp_note)
-                return self.calc_fitness()
+                self.fitness = fit.calc_fitness(self)
+                return self.fitness
 
             self.notes.append(temp_note)
 
