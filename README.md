@@ -11,9 +11,9 @@ Currently only supports a set BPM of 120 and the key of 'C'.
 Can be ran with <pre>python midi-gene</pre>
 
 ## Parameters
-Epoch, population size, and mutation rate are currently set in midi-gene.py
-Fitness rewards are set in Fitness.py
-BPM and Key are set in Parameters.py
+*Epoch, population size, and mutation rate are currently set in midi-gene.py
+*Fitness rewards are set in Fitness.py
+*BPM and Key are set in Parameters.py
 
 ## Fitness
 Currently a track's fitness is calculated by six heuristics:
