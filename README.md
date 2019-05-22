@@ -1,5 +1,7 @@
 # Midi-Genes
 Generates melodies based on an evolutionary model using reproduction, cross-over, and mutation.
+Uses a backing track in the given key in order to give the melody context.
+Currently only supports a set BPM of 120 and the key of 'C'.
 
 ## Modules
 * Python3
