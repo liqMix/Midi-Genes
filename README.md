@@ -8,7 +8,7 @@ Currently only supports a set BPM of 120 and the key of 'C'.
 * [python-midi](https://github.com/vishnubob/python-midi) - python3 branch
 
 ## Execution
-Can be ran with <pre>python midi-gene</pre>
+Can be ran with <pre>python3 midi-gene.py</pre>
 
 ## Parameters
 * Epoch, population size, and mutation rate are currently set in midi-gene.py
