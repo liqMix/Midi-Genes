@@ -1,8 +1,8 @@
-from Fitness import Fitness
 from Note import *
+from midigene import PARAMS, FIT
 import midi
 
-fit = Fitness(PARAMS)
+
 # A track is a container for a list of notes,
 # and is effectively a "genome" for our use,
 # with the notes list serving as the "alleles"
@@ -30,12 +30,16 @@ class Track:
         output = midi.Pattern(resolution=pattern.resolution)
 
         # pattern[0] is midi meta info for the pattern
-        output.append(pattern[0])
+        meta_info = pattern[0]
+        # Set BPM
+        meta_info[0].set_bpm(PARAMS.BPM)
+        output.append(meta_info)
 
         track = midi.Track()
 
         # pattern[1][0] contains the meta information for that track
         track.append(pattern[1][0])
+
         # changes instrument to piano
         # TODO: allow user to change the instrument
         track.append(midi.ProgramChangeEvent(tick=0, channel=2, data=[0]))
@@ -61,6 +65,12 @@ class Track:
         for e in track:
             if isinstance(e, midi.NoteOnEvent):
                 e.tick = 0
+
+        # Adjust bass notes to match key
+        bass = pattern[2]
+        for n in bass:
+            if isinstance(n, midi.NoteOnEvent) or isinstance(n, midi.NoteOffEvent):
+                n.set_pitch(n.get_pitch() + PARAMS.key)
 
         # Appends our track to output
         # pattern[2] and [3] are accompaniment tracks
@@ -90,7 +100,7 @@ class Track:
                         del n
 
                 self.notes.append(temp_note)
-                self.fitness = fit.calc_fitness(self)
+                self.fitness = FIT.calc_fitness(self)
                 return self.fitness
 
             self.notes.append(temp_note)

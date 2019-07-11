@@ -1,6 +1,5 @@
 import random as rand
-from Parameters import *
-
+from midigene import PARAMS
 
 # Each note is
 #         name                desc                         range

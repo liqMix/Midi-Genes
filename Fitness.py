@@ -8,6 +8,7 @@ REVERSE_MOVEMENT_REWARD = 1
 TRITONE_PENALTY = -5
 REPEATED_LEN_PENALTY = -5
 
+
 class Fitness:
     def __init__(self, params):
         self.PARAMS = params
@@ -21,7 +22,6 @@ class Fitness:
         fit += self.rule_five(track)
         return fit
 
-
     # calculates fitness of track based on notes falling within key
     def key_fitness(self, track):
         fit = 0
@@ -29,7 +29,6 @@ class Fitness:
             if midi.NOTE_NAMES[(n.pitch % midi.NOTE_PER_OCTAVE)] in self.PARAMS.NOTES_IN_KEY:
                 fit += NOTE_IN_KEY_REWARD
         return fit
-
 
     # This rule rewards starting and ending notes
     def rule_one(self, track):
@@ -47,7 +46,6 @@ class Fitness:
 
         return fit
 
-
     # This rule penalizes large jumps in pitch
     def rule_two(self, track):
         fit = 0
@@ -57,7 +55,6 @@ class Fitness:
                 if dist != 2:
                     fit -= dist * JUMP_IN_PITCH_MULT
         return fit
-
 
     # This rule rewards jumps in pitch if followed by reverse movement
     def rule_three(self, track):
@@ -75,7 +72,6 @@ class Fitness:
 
         return fit
 
-
     # This rule penalizes a tritone jump
     def rule_four(self, track):
         fit = 0
@@ -88,7 +84,6 @@ class Fitness:
                     fit += TRITONE_PENALTY
 
         return fit
-
 
     # This rule penalizes repeated note lengths
     def rule_five(self, track):

@@ -1,13 +1,11 @@
 from Track import *
-from Fitness import Fitness
+from midigene import PARAMS, FIT
 import heapq as hq
 
-fit = Fitness(PARAMS)
 
 # Population to apply GAs
 class Population:
-
-    def __init__(self, pop_size=1000, mut_rate=0.1):
+    def __init__(self, pop_size=2500, mut_rate=0.3):
         self.pop_size = pop_size
         self.mut_rate = mut_rate
         self.tracks = []
@@ -78,22 +76,20 @@ class Population:
         child_one.normalize()
         child_two.normalize()
 
-        #
+        # Mutate
         if rand.random() <= self.mut_rate:
             child_one = self.mutate(child_one)
         if rand.random() <= self.mut_rate:
             child_two = self.mutate(child_two)
 
         # calc the fit
-        child_one.fitness = fit.calc_fitness(child_one)
-        child_two.fitness = fit.calc_fitness(child_two)
+        child_one.fitness = FIT.calc_fitness(child_one)
+        child_two.fitness = FIT.calc_fitness(child_two)
 
         # push them to the priority queue heap
         hq.heappush(self.tracks, child_one)
         hq.heappush(self.tracks, child_two)
 
-    # clamps the value to min and max pitch, increases the pitch by 12
-    # to get the same note in higher octave
     def mutate(self, child):
         NOTES_IN_KEY = PARAMS.NOTES_IN_KEY
         index = rand.randrange(len(child.notes))
@@ -108,6 +104,8 @@ class Population:
         else:
             child.notes[index].pitch += rand.choice((-1, 1))
 
+        # clamps the value to min and max pitch, increases the pitch by 12
+        # to get the same note in higher octave
         if child.notes[index].pitch > PARAMS.PITCH_MAX:
             child.notes[index].pitch -= 12
         elif child.notes[index].pitch < PARAMS.PITCH_MIN:
