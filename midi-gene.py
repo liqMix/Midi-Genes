@@ -2,15 +2,15 @@ from Population import *
 from Parameters import *
 import os
 
-POPULATION_SIZE = 2500
-EPOCHS = 100000
-
+POPULATION_SIZE = 5000
+EPOCHS = 1000000
+MUT_RATE = 0.3
 
 # Creates population
-pop = Population(2500, 0.3)
+pop = Population(POPULATION_SIZE, MUT_RATE)
 
 # Reproduce
-for i in range(100000):
+for i in range(EPOCHS):
     pop.reproduction()
     print("Epoch {} finished.".format(i))
 

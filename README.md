@@ -13,7 +13,7 @@ This is the same as running with arguments:
     <pre>python midigene.py -note=C -scale=major -bpm=120 -pop_size=1000 -epochs=50000 -mut_rate=0.15</pre>
 
 ## Parameters
-* Epoch, population size, and mutation rate are currently set in midi-gene.py
+* Epoch, population size, and mutation rate are currently set in midigene.py
 * Fitness rewards are set in Fitness.py
 * BPM and Key are set in Parameters.py
 
