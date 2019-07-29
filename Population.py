@@ -5,7 +5,7 @@ import heapq as hq
 
 # Population to apply GAs
 class Population:
-    def __init__(self, pop_size=2500, mut_rate=0.3):
+    def __init__(self, pop_size, mut_rate):
         self.pop_size = pop_size
         self.mut_rate = mut_rate
         self.tracks = []
@@ -20,12 +20,13 @@ class Population:
     # Performs crossover two random tracks
     def reproduction(self):
         # Remove the two weakest tracks
-        hq.heappop(self.tracks)
-        hq.heappop(self.tracks)
+        if len(self.tracks) > 2:
+            hq.heappop(self.tracks)
+            hq.heappop(self.tracks)
 
         # Grab two random tracks
-        parent_one = self.tracks[rand.randrange(len(self.tracks))]
-        parent_two = self.tracks[rand.randrange(len(self.tracks))]
+        parent_one = rand.choice(self.tracks)
+        parent_two = rand.choice(self.tracks)
 
         # and they make babiez :)
         self.crossover(parent_one, parent_two)
