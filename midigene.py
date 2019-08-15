@@ -11,10 +11,12 @@ parser = argparse.ArgumentParser('Generates melodies using a evolutionary model 
 parser.add_argument('-note', help='The note of the musical key.', default='C')
 parser.add_argument('-scale', help='The scale of the musical key.', default='major', choices=['major', 'minor'])
 parser.add_argument('-bpm', help='The speed of the music. (Beats per Minute)', default=120, type=int)
-parser.add_argument('-pop_size', help='The number of tracks in the population.', default=1000, type=int)
-parser.add_argument('-epochs', help='The number of reproduction cycles.', default=50000, type=int)
-parser.add_argument('-mut_rate', help='The rate at which notes within a reproducing track mutate.', default=0.15,
+parser.add_argument('-pop_size', help='The number of tracks in the population.', default=5000, type=int)
+parser.add_argument('-epochs', help='The number of reproduction cycles.', default=5000, type=int)
+parser.add_argument('-mut_rate', help='The rate at which notes within a reproducing track mutate.', default=0.05,
                     type=float)
+parser.add_argument('-bass', help='Whether to attach the bass backing track.', default='True')
+parser.add_argument('-drums', help='Whether to attach the drum backing track.', default='True')
 
 args = parser.parse_args()
 args.note = args.note.upper()
@@ -40,14 +42,15 @@ if __name__ == "__main__":
         sys.stdout.write("\r\x1b[K" + 'Epoch ' + str(i+1) + ' / ' + str(args.epochs))
         sys.stdout.flush()
 
-    # Check the track fitness
-    fitness = hq.nlargest(len(pop.tracks), pop.tracks)[0].fitness
+    # Grab the top track
+    best = hq.nlargest(len(pop.tracks), pop.tracks)[0]
+    fitness = best.fitness
 
     # Grab midi backing track which serves as a midi template
     if args.scale is 'major':
-        pattern = midi.read_midifile("data/backing.mid")
+        backing = midi.read_midifile("data/backing.mid")
     elif 'minor':
-        pattern = midi.read_midifile("data/backing-minor.mid")
+        backing = midi.read_midifile("data/backing-minor.mid")
 
     # Write the generated midi file to disk
     p = "output/output"
@@ -58,6 +61,7 @@ if __name__ == "__main__":
         path = p + str(i) + ".mid"
         i += 1
 
-    midi.write_midifile(path, hq.nlargest(len(pop.tracks), pop.tracks)[0].output_pattern(pattern))
+    output_midi = best.output_pattern(backing, {'bass': args.bass, 'drums': args.drums})
+    midi.write_midifile(path, output_midi)
 
     print("\nSaved output midi as " + path + "\n Ending fitness: " + str(fitness))

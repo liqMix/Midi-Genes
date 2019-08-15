@@ -26,7 +26,7 @@ class Track:
     # by the midi module
     # 
     # NEEDS an input pattern in order to reattach certain parts
-    def output_pattern(self, pattern):
+    def output_pattern(self, pattern, include):
         output = midi.Pattern(resolution=pattern.resolution)
 
         # pattern[0] is midi meta info for the pattern
@@ -75,8 +75,11 @@ class Track:
         # Appends our track to output
         # pattern[2] and [3] are accompaniment tracks
         output.append(track)
-        output.append(pattern[2])
-        output.append(pattern[3])
+        if include['bass'] == 'True':
+            output.append(pattern[2])
+        if include['drums'] == 'True':
+            output.append(pattern[3])
+
         return output
 
     # Creates random notes and stores them in the tracks note list
