@@ -1,8 +1,8 @@
 import midi
 
-NOTE_IN_KEY_REWARD = 20
+NOTE_IN_KEY_REWARD = 15
 STARTING_NOTE_REWARD = 2
-ENDING_NOTE_PENALTY = -10
+ENDING_NOTE_PENALTY = -50
 JUMP_IN_PITCH_MULT = 2
 REVERSE_MOVEMENT_REWARD = 3
 TRITONE_PENALTY = -5
@@ -33,11 +33,16 @@ class Fitness:
     # This rule rewards starting and ending notes
     def rule_one(self, track):
         fit = 0
-        starting_note = midi.NOTE_NAMES[(track.notes[0].pitch % midi.NOTE_PER_OCTAVE)]
+        start_note = midi.NOTE_NAMES[(track.notes[0].pitch % midi.NOTE_PER_OCTAVE)]
+        end_note = midi.NOTE_NAMES[(track.notes[-1].pitch % midi.NOTE_PER_OCTAVE)]
+
         # Start note
-        if (starting_note is self.PARAMS.NOTES_IN_KEY[0]) or \
-                (starting_note is self.PARAMS.NOTES_IN_KEY[4]):
+        if start_note in [self.PARAMS.NOTES_IN_KEY[0], self.PARAMS.NOTES_IN_KEY[4]]:
             fit += STARTING_NOTE_REWARD
+
+        # End note
+        if end_note != self.PARAMS.NOTES_IN_KEY[0]:
+            fit += ENDING_NOTE_PENALTY
 
         return fit
 
@@ -47,8 +52,8 @@ class Fitness:
         for i in range(len(track.notes)):
             if i != 0:
                 dist = abs(track.notes[i].pitch - track.notes[i - 1].pitch)
-                if dist != 2:
-                    fit -= dist * JUMP_IN_PITCH_MULT
+                if dist > 4:
+                    fit += dist * JUMP_IN_PITCH_MULT
         return fit
 
     # This rule rewards jumps in pitch if followed by reverse movement
@@ -56,13 +61,16 @@ class Fitness:
         fit = 0
         for i in range(len(track.notes)):
             if i != 0 and i != (len(track.notes) - 1):
-                if ((track.notes[i].pitch - track.notes[i - 1].pitch)
-                        >= 3):
-                    if track.notes[i + 1].pitch - track.notes[i].pitch < 0:
+                current = track.notes[i].pitch
+                prev = track.notes[i - 1].pitch
+                next = track.notes[i + 1].pitch
+
+                if (current - prev) >= 3:
+                    if (next - current) < 0:
                         fit += REVERSE_MOVEMENT_REWARD
 
-                elif (track.notes[i].pitch - track.notes[i - 1].pitch) <= -3:
-                    if track.notes[i + 1].pitch - track.notes[i].pitch > 0:
+                elif (current - prev) <= -3:
+                    if (next - current) > 0:
                         fit += REVERSE_MOVEMENT_REWARD
 
         return fit
@@ -70,12 +78,14 @@ class Fitness:
     # This rule penalizes a tritone jump
     def rule_four(self, track):
         fit = 0
+        fourth = self.PARAMS.NOTES_IN_KEY[3]
+        seventh = self.PARAMS.NOTES_IN_KEY[6]
         for i in range(len(track.notes)):
             if i != (len(track.notes) - 1):
                 first_note = midi.NOTE_NAMES[(track.notes[i].pitch % midi.NOTE_PER_OCTAVE)]
                 second_note = midi.NOTE_NAMES[(track.notes[i + 1].pitch % midi.NOTE_PER_OCTAVE)]
-                if (((first_note == self.PARAMS.NOTES_IN_KEY[3]) and (second_note == self.PARAMS.NOTES_IN_KEY[6]))
-                        or ((first_note == self.PARAMS.NOTES_IN_KEY[6]) and (second_note == self.PARAMS.NOTES_IN_KEY[3]))):
+                if (((first_note == fourth) and (second_note == seventh))
+                        or ((first_note == seventh) and (second_note == fourth))):
                     fit += TRITONE_PENALTY
 
         return fit
