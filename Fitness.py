@@ -1,12 +1,12 @@
 import midi
 
-NOTE_IN_KEY_REWARD = 5
-STARTING_NOTE_REWARD = 1
-ENDING_NOTE_PENALTY = -25
-JUMP_IN_PITCH_MULT = 1
-REVERSE_MOVEMENT_REWARD = 1
+NOTE_IN_KEY_REWARD = 20
+STARTING_NOTE_REWARD = 2
+ENDING_NOTE_PENALTY = -10
+JUMP_IN_PITCH_MULT = 2
+REVERSE_MOVEMENT_REWARD = 3
 TRITONE_PENALTY = -5
-REPEATED_LEN_PENALTY = -5
+REPEATED_LEN_PENALTY = -1
 
 
 class Fitness:
@@ -38,11 +38,6 @@ class Fitness:
         if (starting_note is self.PARAMS.NOTES_IN_KEY[0]) or \
                 (starting_note is self.PARAMS.NOTES_IN_KEY[4]):
             fit += STARTING_NOTE_REWARD
-
-        # End note
-        if (midi.NOTE_NAMES[(track.notes[-1].pitch % midi.NOTE_PER_OCTAVE)]
-                != self.PARAMS.NOTES_IN_KEY[0]):
-            fit += ENDING_NOTE_PENALTY
 
         return fit
 
