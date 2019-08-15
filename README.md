@@ -10,7 +10,7 @@ Mostly used as an interesting application; only occasionally have produced melod
 ## Execution
 Can be ran with <pre>python midigene.py</pre>
 This is the same as running with arguments:
-    <pre>python midigene.py -note=C -scale=major -bpm=120 -pop_size=1000 -epochs=50000 -mut_rate=0.15</pre>
+    <pre>python midigene.py -note=C -scale=major -bpm=120 -pop_size=1000 -epochs=50000 -mut_rate=0.15 -bass=true -drums=true</pre>
 
 ## Parameters
 * Epoch, population size, and mutation rate are currently set in midigene.py
