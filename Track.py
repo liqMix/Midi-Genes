@@ -68,9 +68,10 @@ class Track:
 
         # Adjust bass notes to match key
         bass = pattern[2]
+        shift = PARAMS.key if PARAMS.key < 6 else PARAMS.key-12
         for n in bass:
             if isinstance(n, midi.NoteOnEvent) or isinstance(n, midi.NoteOffEvent):
-                n.set_pitch(n.get_pitch() + PARAMS.key)
+                n.set_pitch(n.get_pitch() + shift)
 
         # Appends our track to output
         # pattern[2] and [3] are accompaniment tracks
