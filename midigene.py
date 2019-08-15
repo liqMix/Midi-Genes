@@ -15,8 +15,8 @@ parser.add_argument('-pop_size', help='The number of tracks in the population.',
 parser.add_argument('-epochs', help='The number of reproduction cycles.', default=5000, type=int)
 parser.add_argument('-mut_rate', help='The rate at which notes within a reproducing track mutate.', default=0.05,
                     type=float)
-parser.add_argument('-bass', help='Whether to attach the bass backing track.', default='True')
-parser.add_argument('-drums', help='Whether to attach the drum backing track.', default='True')
+parser.add_argument('-bass', help='Whether to attach the bass backing track.', default='true', choices=['true', 'false'])
+parser.add_argument('-drums', help='Whether to attach the drum backing track.', default='true', choices=['true', 'false'])
 
 args = parser.parse_args()
 args.note = args.note.upper()

@@ -76,9 +76,9 @@ class Track:
         # Appends our track to output
         # pattern[2] and [3] are accompaniment tracks
         output.append(track)
-        if include['bass'] == 'True':
+        if include['bass'] == 'true':
             output.append(pattern[2])
-        if include['drums'] == 'True':
+        if include['drums'] == 'true':
             output.append(pattern[3])
 
         return output
