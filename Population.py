@@ -94,22 +94,15 @@ class Population:
     def mutate(self, child):
         NOTES_IN_KEY = PARAMS.NOTES_IN_KEY
         index = rand.randrange(len(child.notes))
-        note = midi.NOTE_NAMES[(child.notes[index].pitch % midi.NOTE_PER_OCTAVE)]
+        note = child.notes[index]
 
-        if (note == NOTES_IN_KEY[2]) or (note == NOTES_IN_KEY[6]):
-            child.notes[index].pitch += rand.choice((-2, 1))
-        elif (note == NOTES_IN_KEY[0]) or (note == NOTES_IN_KEY[3]):
-            child.notes[index].pitch += rand.choice((-1, 2))
-        elif ((note == NOTES_IN_KEY[1]) or (note == NOTES_IN_KEY[4])) or (note == NOTES_IN_KEY[5]):
-            child.notes[index].pitch += rand.choice((-2, 2))
-        else:
-            child.notes[index].pitch += rand.choice((-1, 1))
+        note.pitch += rand.choice([-1, 1])
 
         # clamps the value to min and max pitch, increases the pitch by 12
         # to get the same note in higher octave
-        if child.notes[index].pitch > PARAMS.PITCH_MAX:
-            child.notes[index].pitch -= 12
-        elif child.notes[index].pitch < PARAMS.PITCH_MIN:
-            child.notes[index].pitch += 12
+        if note.pitch > PARAMS.PITCH_MAX:
+            note.pitch -= 12
+        elif note.pitch < PARAMS.PITCH_MIN:
+            note.pitch += 12
 
         return child
