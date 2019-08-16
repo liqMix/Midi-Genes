@@ -13,7 +13,7 @@ Can be ran with <pre>python midigene.py</pre>
 This is the same as running with arguments:
     <pre>python midigene.py -note=C -scale=major -bpm=120 -pop_size=1000 -epochs=50000 -mut_rate=0.15 -instrument=0 -bass=true -drums=true</pre>
     
-Alternatively, remote execution of this program can be found on my website, which allows for easy setting of the parameters. You can access that [here](liqmix.github.io/midi-genes).
+Alternatively, remote execution of this program can be found on my website, which allows for easy setting of the parameters. You can access that [here](https://liqmix.github.io/midi-genes).
 
 ## Parameters
 * Epoch, population size, and mutation rate are currently set in midigene.py
@@ -21,7 +21,7 @@ Alternatively, remote execution of this program can be found on my website, whic
 * BPM and Key are set in Parameters.py
 
 ## Instruments
-Instrument values are based on the General MIDI standard and the list of acceptable values can be found [here](https://en.wikipedia.org/wiki/General_MIDI#Program_change_events)
+Instrument values are based on the General MIDI standard and the list of acceptable values can be found [here](https://en.wikipedia.org/wiki/General_MIDI#Program_change_events).\
 If not provided, the program defaults to using the 'Acoustic Grand Piano' for the melody.
 
 ## Fitness
