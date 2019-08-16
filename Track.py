@@ -26,7 +26,7 @@ class Track:
     # by the midi module
     # 
     # NEEDS an input pattern in order to reattach certain parts
-    def output_pattern(self, pattern, include):
+    def output_pattern(self, pattern, include, instrument):
         output = midi.Pattern(resolution=pattern.resolution)
 
         # pattern[0] is midi meta info for the pattern
@@ -40,9 +40,8 @@ class Track:
         # pattern[1][0] contains the meta information for that track
         track.append(pattern[1][0])
 
-        # changes instrument to piano
-        # TODO: allow user to change the instrument
-        track.append(midi.ProgramChangeEvent(tick=0, channel=2, data=[0]))
+        # changes instrument based on input
+        track.append(midi.ProgramChangeEvent(tick=0, channel=2, data=[instrument]))
 
         # Translates the notes in the track to midi events
         for note in self.notes:

@@ -15,6 +15,7 @@ parser.add_argument('-pop_size', help='The number of tracks in the population.',
 parser.add_argument('-epochs', help='The number of reproduction cycles.', default=5000, type=int)
 parser.add_argument('-mut_rate', help='The rate at which notes within a reproducing track mutate.', default=0.05,
                     type=float)
+parser.add_argument('-instrument', help='The instrument playing the generated melody.', default=0, type=int)
 parser.add_argument('-bass', help='Whether to attach the bass backing track.', default='true', choices=['true', 'false'])
 parser.add_argument('-drums', help='Whether to attach the drum backing track.', default='true', choices=['true', 'false'])
 
@@ -61,7 +62,7 @@ if __name__ == "__main__":
         path = p + str(i) + ".mid"
         i += 1
 
-    output_midi = best.output_pattern(backing, {'bass': args.bass, 'drums': args.drums})
+    output_midi = best.output_pattern(backing, {'bass': args.bass, 'drums': args.drums}, instrument)
     midi.write_midifile(path, output_midi)
 
     print("\nSaved output midi as " + path + "\n Ending fitness: " + str(fitness))
